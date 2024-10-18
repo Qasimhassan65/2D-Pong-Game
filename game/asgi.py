@@ -5,7 +5,7 @@ from channels.auth import AuthMiddlewareStack
 from channels.security.websocket import AllowedHostsOriginValidator
 from app1.routing import websocket_urlpatterns  # Adjust the import
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'your_project_name.settings')  # Update with your project name
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'game.settings')  # Update with your project name
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),

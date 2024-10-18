@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup Page</title>
+
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+
+  <!--Stylesheet-->
+  <style media="screen">
+    *, *:before, *:after {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #080710;
+      color: #D328E2; /* Set a base color for text */
+    }
+
+    .background {
+      width: 430px;
+      height: 520px;
+      position: absolute;
+      transform: translate(-50%, -50%);
+      left: 50%;
+      top: 50%;
+    }
+
+    .background .shape {
+      height: 200px;
+      width: 200px;
+      position: absolute;
+      border-radius: 50%;
+    }
+
+    .shape:first-child {
+      background: linear-gradient(#3C6786, #D328E2); /* Pinkish gradient */
+      left: -80px;
+      top: -80px;
+    }
+
+    .shape:last-child {
+      background: linear-gradient(to right, #D328E2, #ff512f); /* Pinkish to orange gradient */
+      right: -30px;
+      bottom: -80px;
+    }
+
+    form {
+      height: 450px;
+      width: 350px; /* Reduced the width */
+      background-color: rgba(0, 0, 0, 0.7); /* Darker background for the form */
+      position: absolute;
+      transform: translate(-50%, -50%);
+      top: 50%;
+      left: 50%;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255,255,255,0.3);
+      box-shadow: 0 0 40px rgba(8,7,16,0.6);
+      padding: 40px 30px; /* Reduced padding */
+    }
+
+    form * {
+      font-family: 'Poppins', sans-serif;
+      color: #D328E2; /* Pinkish text color */
+      letter-spacing: 0.5px;
+      outline: none;
+      border: none;
+      height: auto;
+    }
+
+    form h3 {
+      font-size: 28px; /* Reduced font size */
+      font-weight: 500;
+      line-height: 38px;
+      text-align: center;
+      color: white; /* Pinkish title color */
+    }
+
+    label {
+      display: block;
+      margin-top: 12px; /* Reduced spacing */
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    input {
+      display: block;
+      height: 35px; /* Reduced height */
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.1); /* Light gray input background */
+      border-radius: 3px;
+      padding: 0 10px;
+      margin-top: 2px;
+      font-size: 14px;
+      font-weight: 300;
+      color: white; /* Pinkish text color */
+    }
+
+    ::placeholder {
+      color: #e5e5e5;
+    }
+
+    button {
+      margin-top: 12px; /* Reduced spacing */
+      width: 100%;
+      background-color: #D328E2; /* Pinkish button background */
+      color: white;
+      padding: 8px 0;
+      font-size: 16px; /* Reduced font size */
+      font-weight: 600;
+      border-radius: 5px;
+      cursor: pointer;
+      border: none;
+    }
+
+    button:hover {
+      background-color: #a322af; /* Darker pink on hover */
+    }
+
+    a {
+      display: block;
+      margin-top: 10px; /* Reduced spacing */
+      text-align: center;
+      color: white; /* Pinkish link color */
+      font-size: 14px;
+    }
+
+    a:hover {
+      text-decoration: underline;
+      color: #a322af;
+    }
+
+    .social {
+      margin-top: 20px; /* Reduced spacing */
+      display: flex;
+      justify-content: center; /* Center the social buttons */
+    }
+
+    .social div {
+      width: 120px; /* Reduced width */
+      padding: 5px 10px;
+      background-color: rgba(255,255,255,0.27);
+      color: #D328E2; /* Pinkish text color */
+      text-align: center;
+      border-radius: 3px;
+    }
+
+    .social div:hover {
+      background-color: rgba(255,255,255,0.47);
+    }
+
+    .social .fb {
+      margin-left: 15px;
+    }
+
+    .social i {
+      margin-right: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="background">
+    <div class="shape"></div>
+    <div class="shape"></div>
+  </div>
+
+  <form action="" method="post">
+    {% csrf_token %}
+    <h3>Signup Here</h3>
+
+    <label for="username">Username</label>
+    <input type="text" placeholder="Username" name="username" id="username">
+
+    <label for="email">Email</label>
+    <input type="email" placeholder="Email or Phone" name="email" id="email">
+
+    <label for="password1">Password</label>
+    <input type="password" placeholder="Password" id="password1" name="password1">
+
+    <label for="password2">Confirm Password</label>
+    <input type="password" placeholder="Confirm Password" id="password2" name="password2">
+
+    <button type="submit">Signup</button>
+
+    <a href="{% url 'login' %}">I have an account</a>
+  </form>
+</body>
+</html>

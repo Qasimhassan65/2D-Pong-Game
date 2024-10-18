@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplayer Pong Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            display: block;
+            background: #222;
+            border: 1px solid #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Multiplayer Pong Game</h1>
+    
+    <script>
+        // Make sure to define roomName correctly
+        const roomName = '123'; // Example room name; replace with actual logic if needed
+
+const chatSocket = new WebSocket(
+    'ws://' + window.location.host + '/play/' + roomName + '/'
+);
+
+        chatSocket.onopen = function(e) {
+            console.log('WebSocket connection established!');
+        };
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            console.log('Message from server: ', data);
+            // Handle incoming messages here
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Menu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!--Stylesheet-->
+    <style>
+        *, *:before, *:after {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000; /* Deep black background */
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            color: #D328E2; /* Neon pink for text */
+            perspective: 1000px; /* Add perspective to the scene */
+        }
+
+        .background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .menu-container {
+            width: 350px;
+            background-color: rgba(0, 0, 0, 0.75); /* Dark translucent background */
+            border: 2px solid rgba(255,255,255,0.1); /* Soft white border */
+            border-radius: 10px;
+            padding: 40px 30px;
+            box-shadow: 0 0 40px #d30e9f66, 5px 5px 20px rgba(0, 0, 0, 0.8); /* 3D shadow */
+            text-align: center;
+            z-index: 1;
+        }
+
+        .menu-container h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            font-weight: 700;
+            text-shadow: 0 3px 10px rgba(211, 40, 226, 0.8); /* Text shadow for depth */
+        }
+
+        .button {
+            display: block;
+            width: 100%;
+            padding: 12px 0;
+            margin: 20px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff; /* Neon text */
+            background-color: #121212; /* Deep black button background */
+            border: 2px solid #D328E2; /* Neon pink border */
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 0 #D328E2, 0 10px 15px rgba(0, 0, 0, 0.8); /* 3D shadow effect */
+            transform: translateY(-5px); /* Slight elevation for a 3D feel */
+            text-decoration: none;
+        }
+
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
+            background: rgba(255, 0, 127, 0.2); /* Neon pink glow */
+            filter: blur(8px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            text-decoration: none;
+        }
+
+        .button:hover::before {
+            opacity: 1;
+        }
+
+        .button:hover {
+            background-color: #D328E2; /* Neon pink on hover */
+            color: white;
+            box-shadow: 0 6px 0 #D328E2, 0 12px 25px rgba(255, 0, 127, 0.5); /* Stronger shadow on hover */
+            transform: translateY(-8px); /* Increase elevation */
+        }
+
+        .button:active {
+            transform: translateY(0); /* Button depresses on click */
+            box-shadow: 0 2px 0 #D328E2, 0 5px 10px rgba(0, 0, 0, 0.8); /* Reduced shadow on click */
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8); /* Dark translucent background */
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background-color: rgba(0, 0, 0, 0.85); /* Dark modal background */
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+            width: 300px;
+            box-shadow: 0 0 40px #d30e9f66, 0 10px 25px rgba(255, 0, 127, 0.5); /* Pink neon shadow */
+        }
+
+        .modal-content h2 {
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-shadow: 0 3px 10px rgba(211, 40, 226, 0.8); /* Neon glow */
+        }
+
+        .modal-content p {
+            color: #D328E2; /* Neon pink text */
+            font-size: 1.2rem;
+        }
+
+        .modal-content select, .modal-content input, .modal-content button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #D328E2;
+            border-radius: 5px;
+            background-color: #121212; /* Same black background as buttons */
+            color: white;
+            font-size: 1rem;
+            box-shadow: 0 4px 0 #D328E2, 0 10px 15px rgba(0, 0, 0, 0.8); /* Button-like shadow */
+        }
+
+        .modal-content button {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-content button:hover {
+            background-color: #D328E2;
+            box-shadow: 0 6px 0 #D328E2, 0 12px 25px rgba(255, 0, 127, 0.5); /* Stronger shadow */
+        }
+
+        /* Back arrow icon */
+        .back-arrow {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 24px;
+            color: #D328E2;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            opacity: .75;
+        }
+
+        .back-arrow:hover {
+            opacity: 1;
+            color: white;
+        }
+
+        /* Glow effect for modal */
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            background: rgba(255, 0, 127, 0.2);
+            filter: blur(8px);
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background"></div>
+
+    <div class="menu-container">
+        <h1>MENU</h1>
+        <a class="button PlayGame" href="javascript:void(0)" onclick="openModal()">Play Online</a>
+        <a class="button PlayAI" href="{% url 'Playwithcomputer' %}">Practise</a>
+        <a href="{% url 'highscores' %}" class="button highscores-button">Highscores</a>
+        <a href="{% url 'help' %}" class="button help-button">Help</a>
+    </div>
+    
+    <!-- Modal for Playing Online -->
+    <div class="modal" id="waitingModal" style="{% if show_modal %}display: flex;{% else %}display: none;{% endif %}">
+        <div class="modal-content">
+            <i class="fas fa-arrow-left back-arrow" onclick="closeModal()"></i>
+            <h2>Play Online</h2>
+    
+            <!-- Form for Play Online -->
+            <form action="" method="POST">
+                {% csrf_token %}
+                <select name="roomOption" id="roomAction" required>
+                    <option value="">Select Room Option</option>
+                    <option value="create">Create Room</option>
+                    <option value="join">Join Room</option>
+                </select>
+                <input type="text" name="roomCode" id="roomCodeField" placeholder="Enter Room Code" required>
+                <!-- Display messages -->
+                {% if error_message %}
+                <div class="alert alert-danger">
+                    {{ error_message }}
+                </div>
+                {% endif %}
+                <button type="submit">Let's Play</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function openModal() {
+            document.getElementById('waitingModal').style.display = 'flex';
+        }
+    
+        function closeModal() {
+            document.getElementById('waitingModal').style.display = 'none';
+        }
+    </script>
+    
+</body>
+</html>
+

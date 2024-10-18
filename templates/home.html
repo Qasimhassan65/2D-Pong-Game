@@ -1,0 +1,44 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlashPoint</title>
+
+    {% load static %}
+
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'home.css' %}">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="navbar">
+        <h3 class="title">FLASHPOINT</h3>
+        <ul class="navbar-items"> 
+            <li>Home</li>
+            <li>About</li>
+            <li><button class="playbutton">PlayGame</button></li>
+        </ul>
+    </nav>
+
+    <form method="post">
+        {% csrf_token %}
+    <section class="welcome-section">
+        <h1 class="welcome-title">WELCOME TO FLASHPOINT</h1>
+        <p class="welcome-description">Step into the world of FlashPoint – your ultimate destination for experiencing the classic <span class="highlight">2D Pong game</span>. Relive the nostalgia of the iconic arcade game, right here!</p>
+        <button class="welcome-button">PlayGame</button>
+    </section>
+    </form>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 FlashPoint. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html> 

@@ -5,47 +5,219 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multiplayer Pong Game</title>
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        * {
             margin: 0;
-            background-color: #000;
+            padding: 0;
+        }
+
+        body {
+            overflow: hidden;
             color: #fff;
-            font-family: Arial, sans-serif;
+            font-family: sans-serif;
         }
-        canvas {
-            display: block;
-            background: #222;
-            border: 1px solid #fff;
+
+        #playerscore, #compscore {
+            position: absolute;
+            top: 20px;
+            font-size: 3.5rem;
         }
+
+        #playerscore {
+            left: 35%;
+        }
+
+        #compscore {
+            right: 35%;
+        }
+
+        body {
+            background-color: #000000; /* Deep black background */
+            color: #D328E2; /* Neon pink for text */
+            font-family: 'Poppins', sans-serif;
+        }
+
     </style>
 </head>
 <body>
-    <h1>Multiplayer Pong Game</h1>
+    <canvas id="canvas"></canvas>
+    <h1 id="myscore">0</h1>
+    <h1 id="opponentscore">0</h1>
     
     <script>
-        // Make sure to define roomName correctly
+        // Define room name for WebSocket
         const roomName = '123'; // Example room name; replace with actual logic if needed
-
-const chatSocket = new WebSocket(
-    'ws://' + window.location.host + '/play/' + roomName + '/'
-);
-
+    
+        const chatSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/play/' + roomName + '/'
+        );
+    
+        let playerRole = ''; // Player 1 or Player 2
+        let opponentPaddlePos = {}; // Store opponent's paddle position
+    
         chatSocket.onopen = function(e) {
             console.log('WebSocket connection established!');
         };
-
+    
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
+    
+            if (data.type === 'player_role') {
+                if (data.player_number === 1) {
+                    console.log('You are Player 1 (left paddle)');
+                    playerRole = 'player_1'; // Set role as Player 1
+                } else if (data.player_number === 2) {
+                    console.log('You are Player 2 (right paddle)');
+                    playerRole = 'player_2'; // Set role as Player 2
+                }
+            }
+    
+            // Handle receiving the opponent's paddle position
+            if (data.type === 'paddle_position') {
+                if (data.role !== playerRole) {
+                    opponentPaddlePos = data.pos; // Update opponent's paddle position
+                }
+            }
+    
             console.log('Message from server: ', data);
-            // Handle incoming messages here
         };
-
+    
         chatSocket.onclose = function(e) {
             console.error('Chat socket closed unexpectedly');
         };
+    
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+    
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    
+        function vec2(x, y) {
+            return { x: x, y: y };
+        }
+    
+        const KEY_UP = 38;
+        const KEY_DOWN = 40;
+    
+        const keysPressed = [];
+    
+        window.addEventListener('keydown', function(e) {
+            keysPressed[e.keyCode] = true;
+        });
+    
+        window.addEventListener('keyup', function(e) {
+            keysPressed[e.keyCode] = false;
+        });
+    
+        function drawGameScreen() {
+            ctx.strokeStyle = "#D328E2";
+            ctx.beginPath();
+            ctx.lineWidth = 15;
+            ctx.moveTo(0, 0);
+            ctx.lineTo(canvas.width, 0);
+            ctx.stroke();
+    
+            ctx.beginPath();
+            ctx.lineWidth = 15;
+            ctx.moveTo(0, canvas.height);
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.stroke();
+    
+            ctx.beginPath();
+            ctx.lineWidth = 15;
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, canvas.height);
+            ctx.stroke();
+    
+            ctx.beginPath();
+            ctx.lineWidth = 15;
+            ctx.moveTo(canvas.width, 0);
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.stroke();
+    
+            ctx.beginPath();
+            ctx.lineWidth = 10;
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.stroke();
+    
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 50, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+    
+        function Paddle(pos, velocity, width, height) {
+            this.pos = pos;
+            this.velocity = velocity;
+            this.width = width;
+            this.height = height;
+    
+            this.update = function() {
+                if (keysPressed[KEY_UP]) {
+                    this.pos.y -= this.velocity.y;
+                }
+    
+                if (keysPressed[KEY_DOWN]) {
+                    this.pos.y += this.velocity.y;
+                }
+    
+                // Keep paddle within canvas boundaries
+                if (this.pos.y < 0) {
+                    this.pos.y = 0;
+                } else if (this.pos.y + this.height > canvas.height) {
+                    this.pos.y = canvas.height - this.height;
+                }
+    
+                // Send player paddle position to opponent
+                chatSocket.send(JSON.stringify({
+                    type: 'paddle_position',
+                    pos: this.pos,
+                    role: playerRole
+                }));
+            };
+    
+            this.draw = function() {
+                ctx.fillStyle = "white";
+                ctx.fillRect(this.pos.x, this.pos.y, this.width, this.height);
+            }
+        }
+    
+        function gameUpdate() {
+            if (playerRole === 'player_1') {
+                paddle_player.update(); // Move Player 1's paddle
+            } else if (playerRole === 'player_2') {
+                paddle_opponent.update(); // Move Player 2's paddle
+            }
+    
+            // Sync opponent's paddle position
+            if (opponentPaddlePos) {
+                if (playerRole === 'player_1') {
+                    paddle_opponent.pos = opponentPaddlePos; // Update opponent's paddle
+                } else if (playerRole === 'player_2') {
+                    paddle_player.pos = opponentPaddlePos; // Update opponent's paddle
+                }
+            }
+        }
+    
+        function gameDraw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+            drawGameScreen();
+            paddle_player.draw(); // Draw Player 1 paddle
+            paddle_opponent.draw(); // Draw Player 2 paddle
+        }
+    
+        function gameLoop() {
+            gameUpdate();
+            gameDraw();
+            requestAnimationFrame(gameLoop);
+        }
+    
+        // Left Paddle (Player 1)
+        const paddle_player = new Paddle(vec2(0, 50), vec2(5, 5), 12, 160);
+        // Right Paddle (Player 2)
+        const paddle_opponent = new Paddle(vec2(canvas.width - 12, 50), vec2(5, 5), 12, 160);
+    
+        gameLoop();
     </script>
+    
 </body>
 </html>

@@ -25,12 +25,14 @@ SECRET_KEY = 'django-insecure-$exrt8kf&lryh3^xy&a6mi-(brg)94b$!%1)=204hs!7r#9%0f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'corsheaders',
     'channels',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,12 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app1',
-    
 ]
 
 ASGI_APPLICATION = 'game.asgi.application'
 
-#WSGI_APPLICATION = 'game.wsgi.application'
+WSGI_APPLICATION = 'game.wsgi.application'
 
 CHANNEL_LAYERS = {
     'default': {
@@ -65,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'game.urls'
